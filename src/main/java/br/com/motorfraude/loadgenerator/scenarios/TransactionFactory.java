@@ -16,21 +16,8 @@ import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.IntStream;
 
-/**
- * Gera transações sintéticas alinhadas ao banco legado local ({@code infra/bank-db/init.sql}): contas
- * {@code acc_tok_00000001..N}, clientes {@code cus_tok_…} de mesmo número e devices conhecidos
- * {@code dev_ + md5(conta:d)}. Assim, quando o motor enriquecer com o perfil, o "normal" parece normal e os cenários de
- * fraude (device novo, beneficiário novo) realmente desviam.
- *
- * <p>Os cenários que dependem de uma conta receber várias transações juntas (rajada e pulverização) usam "contas quentes":
- * poucas contas, que mudam a cada 10 s. Não é thread-safe: um único laço despachante o usa.
- */
 public final class TransactionFactory {
 
-    /**
-     * Beneficiários do cenário {@code BLOCKLISTED_BENEFICIARY}. A blocklist do motor (specs 002/004) deve carregar estes
-     * tokens para a regra de lista disparar na demonstração.
-     */
     public static final List<String> BLOCKLISTED_BENEFICIARIES =
             IntStream.rangeClosed(1, 20).mapToObj(i -> String.format("acc_tok_blk%05d", i)).toList();
 
@@ -49,10 +36,6 @@ public final class TransactionFactory {
     private int historyCount;
     private long sequence;
 
-    /**
-     * @param runId identifica a execução e entra no transactionId, para duas execuções seguidas não colidirem no Redis
-     * @param accounts quantas contas existem no banco legado (10.000 localmente)
-     */
     public TransactionFactory(Clock clock, RandomGenerator random, String runId, int accounts) {
         if (accounts < 2) {
             throw new IllegalArgumentException("são necessárias ao menos 2 contas");
@@ -67,7 +50,6 @@ public final class TransactionFactory {
         this.sprayPool = List.copyOf(hot.subList(Math.min(half, hot.size() - 1), hot.size()));
     }
 
-    /** Device que o banco legado cadastra para a conta: {@code dev_ + 16 primeiros caracteres de md5(conta:d)}. */
     public static String knownDevice(String accountId, int index) {
         return "dev_" + md5Hex(accountId + ":" + index).substring(0, 16);
     }
@@ -82,8 +64,6 @@ public final class TransactionFactory {
             case BLOCKLISTED_BENEFICIARY -> remember(blocklisted());
         };
     }
-
-    // ---------- cenários ----------
 
     private PlannedTransaction normal(Scenario scenario, int account) {
         return build(scenario, account, normalDevice(account), normalAmount(), randomType(), randomChannel(), randomCounterparty(account));
@@ -116,8 +96,6 @@ public final class TransactionFactory {
         return new PlannedTransaction(original.transactionId(), Scenario.DUPLICATE, original.body());
     }
 
-    // ---------- construção ----------
-
     private PlannedTransaction build(
             Scenario scenario, int account, String device, long amount, TransactionType type, Channel channel, String counterparty) {
         var transactionId = "tx_" + runId + "_" + (++sequence);
@@ -142,8 +120,6 @@ public final class TransactionFactory {
         return planned;
     }
 
-    // ---------- sorteios ----------
-
     private int randomAccount() {
         return 1 + random.nextInt(accounts);
     }
@@ -161,7 +137,6 @@ public final class TransactionFactory {
         return "dev_" + md5Hex("new:" + runId + ":" + sequence).substring(0, 16);
     }
 
-    /** Conta que não existe na base (número acima de {@code accounts}); único em toda a execução. */
     private String newBeneficiary() {
         return accountToken(accounts + 1 + (int) (sequence % 90_000_000L));
     }
@@ -181,7 +156,6 @@ public final class TransactionFactory {
         return draw < 60 ? Channel.MOBILE : draw < 85 ? Channel.WEB : draw < 95 ? Channel.API : Channel.BRANCH;
     }
 
-    /** O grupo ativo gira a cada 10 s: o mesmo punhado de contas recebe a rajada, e depois outro. */
     private int hotAccount(List<Integer> pool) {
         long window = clock.instant().getEpochSecond() / HOT_WINDOW_SECONDS;
         int groups = Math.max(1, pool.size() / HOT_GROUP_SIZE);

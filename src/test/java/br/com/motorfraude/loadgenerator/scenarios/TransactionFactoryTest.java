@@ -18,7 +18,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** T022 — transações sintéticas alinhadas ao banco legado (contas 1..10.000) e cenários de fraude. */
 class TransactionFactoryTest {
 
     private static final Instant NOW = Instant.parse("2026-11-14T12:00:00Z");

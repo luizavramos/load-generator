@@ -16,7 +16,6 @@
     <description>Gerador de carga sintética com cenários de fraude, em modelo aberto (spec 000, H4).</description>
 
     <properties>
-        <!-- Classe principal: usada pelo exec:java e pelo jar executável -->
         <load-generator.main>br.com.motorfraude.loadgenerator.Main</load-generator.main>
     </properties>
 
@@ -30,7 +29,6 @@
             <artifactId>HdrHistogram</artifactId>
         </dependency>
 
-        <!-- Testes -->
         <dependency>
             <groupId>br.com.motorfraude</groupId>
             <artifactId>contracts</artifactId>
@@ -52,7 +50,6 @@
     <build>
         <plugins>
             <plugin>
-                <!-- Execução: ./mvnw -pl load-generator exec:java com -Dexec.args (ver README, seção "Teste de carga") -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
@@ -60,7 +57,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- Jar executável (java -jar load-generator/target/load-generator.jar ...): mede sem o Maven por perto -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
@@ -96,9 +92,6 @@
         </plugins>
     </build>
 
-    <!-- Artefatos compartilhados: GitHub Packages (repositórios privados). Leitura e escrita exigem um token
-         configurado no ~/.m2/settings.xml com o id github-motor-fraude (ver README). Sem registry, use ./mvnw install
-         nos repositórios motor-fraude-parent, contracts e platform-commons, nessa ordem. -->
     <repositories>
         <repository>
             <id>github-motor-fraude</id>

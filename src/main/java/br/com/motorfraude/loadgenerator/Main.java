@@ -6,13 +6,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-/** Linha de comando do gerador de carga. Códigos de saída: 0 ok, 2 argumentos inválidos, 1 falha ao executar. */
 public final class Main {
 
     private Main() {}
 
     public static void main(String[] args) {
-        // UTF-8 explícito: no Windows o Java usaria a codificação nativa do console e os acentos sairiam quebrados
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         var err = new PrintStream(System.err, true, StandardCharsets.UTF_8);
         System.exit(run(args, out, err));

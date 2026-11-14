@@ -10,15 +10,14 @@ import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** T024 — o relatório final. */
 class ReportTest {
 
     private static Report report() {
         var micros = new Histogram(60_000_000L, 3);
         for (int i = 0; i < 999; i++) {
-            micros.recordValue(1_000); // 1 ms
+            micros.recordValue(1_000);
         }
-        micros.recordValue(100_000); // 100 ms
+        micros.recordValue(100_000);
         var statuses = new LinkedHashMap<String, Long>();
         statuses.put("202 ACCEPTED", 990L);
         statuses.put("202 DUPLICATE", 9L);

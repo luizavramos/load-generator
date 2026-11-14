@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/** Lê a linha de comando. Qualquer problema vira {@link IllegalArgumentException} com a opção no texto. */
 public final class CliParser {
 
     public static final String USAGE = """

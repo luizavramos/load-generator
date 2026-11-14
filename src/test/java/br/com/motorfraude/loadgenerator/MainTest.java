@@ -24,7 +24,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/** T023 + T025 — o gerador inteiro contra um servidor HTTP local que imita o receiver. */
 class MainTest {
 
     private record Received(String clientId, String idempotencyKey, String scenario, String contentType, String body) {}
@@ -37,7 +36,6 @@ class MainTest {
 
     @BeforeEach
     void startServer() throws Exception {
-        // backlog grande: com o padrão, a rajada inicial de conexões novas é recusada pelo servidor de teste (não pelo gerador)
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 4096);
         server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         server.createContext("/v1/transactions:evaluate", exchange -> {
@@ -82,7 +80,6 @@ class MainTest {
                 "--duplicate-ratio", "0.1", "--seed", "7", "--accepted-log", acceptedLog.toString());
 
         assertThat(exit).isZero();
-        // o servidor de teste, no mesmo processo, pode derrubar uma ou outra conexão; o gerador conta isso como erro
         assertThat(received).hasSizeBetween(380, 400);
         var scenarios = new HashSet<String>();
         for (var request : new ArrayList<>(received)) {

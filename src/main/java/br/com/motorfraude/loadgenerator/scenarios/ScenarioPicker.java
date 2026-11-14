@@ -3,10 +3,6 @@ package br.com.motorfraude.loadgenerator.scenarios;
 import java.util.List;
 import java.util.random.RandomGenerator;
 
-/**
- * Sorteia o cenário de cada requisição. {@code fraudRatio} e {@code duplicateRatio} são frações do total de requisições;
- * a fração de fraude se divide igualmente entre os quatro cenários de fraude. O resto é {@link Scenario#NORMAL}.
- */
 public final class ScenarioPicker {
 
     private static final List<Scenario> FRAUD = List.of(

@@ -7,10 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-/**
- * Arquivo com os transactionId aceitos ({@code 202 ACCEPTED}), um por linha. É a entrada do auditor da spec 004: tudo o
- * que o receiver aceitou precisa aparecer nas decisões do motor.
- */
 public final class AcceptedLog implements Consumer<String>, AutoCloseable {
 
     private final BufferedWriter writer;

@@ -8,7 +8,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.regex.Pattern;
 
-/** Envia as transações ao receiver por HTTP/1.1, com o cliente do JDK. Cada chamada bloqueia só a sua thread virtual. */
 public final class HttpTarget implements Target, AutoCloseable {
 
     private static final Pattern STATUS_FIELD = Pattern.compile("\"status\"\\s*:\\s*\"([A-Z_]+)\"");

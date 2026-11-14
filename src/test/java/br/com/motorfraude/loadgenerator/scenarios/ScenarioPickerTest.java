@@ -9,7 +9,6 @@ import java.util.Random;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** T021 — o sorteio de cenários respeita as proporções pedidas (±1% da spec; aqui, ±0,4 ponto com 200 mil sorteios). */
 class ScenarioPickerTest {
 
     private static final int DRAWS = 200_000;

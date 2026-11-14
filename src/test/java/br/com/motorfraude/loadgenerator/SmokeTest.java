@@ -6,7 +6,6 @@ import br.com.motorfraude.contracts.Schemas;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** T020b — o módulo existe, compila e enxerga o módulo contracts. */
 class SmokeTest {
 
     @Test

@@ -18,15 +18,6 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
 import org.HdrHistogram.Recorder;
 
-/**
- * Executa a carga em <strong>modelo aberto</strong>: a requisição {@code i} é planejada para {@code início + i / tps}
- * e enviada assim que o horário chega, sem esperar as anteriores terminarem (cada envio roda numa thread virtual). A
- * latência de cada resposta é medida a partir do horário <em>planejado</em>, não do envio: se o alvo travar, ou se o
- * próprio gerador atrasar, o atraso entra na medida em vez de sumir (<em>coordinated omission</em>).
- *
- * <p>Ao passar de {@code maxInFlight} requisições em voo, as novas são descartadas e contadas (o relatório mostra),
- * para um alvo parado não consumir a memória do gerador.
- */
 public final class LoadRunner {
 
     private static final long HISTOGRAM_MAX_MICROS = 60_000_000L;
@@ -39,7 +30,6 @@ public final class LoadRunner {
         this(config, target, id -> {});
     }
 
-    /** @param acceptedSink recebe o transactionId de cada resposta {@code 202 ACCEPTED}, inclusive do aquecimento */
     public LoadRunner(Config config, Target target, Consumer<String> acceptedSink) {
         this.config = config;
         this.target = target;
@@ -135,7 +125,6 @@ public final class LoadRunner {
                 Runtime.getRuntime().availableProcessors());
     }
 
-    /** CPU acumulada do processo do gerador, em nanossegundos; -1 se a JVM não informa. */
     private static long processCpuNanos() {
         if (java.lang.management.ManagementFactory.getOperatingSystemMXBean() instanceof com.sun.management.OperatingSystemMXBean os) {
             return os.getProcessCpuTime();
@@ -177,7 +166,6 @@ public final class LoadRunner {
         }
     }
 
-    /** Classe e mensagem (curta) da exceção; só a causa mais interna, para agrupar erros iguais. */
     private static String describe(Throwable error) {
         var root = error;
         while (root.getCause() != null && root.getCause() != root) {

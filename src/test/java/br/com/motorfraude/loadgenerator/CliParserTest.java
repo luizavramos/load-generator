@@ -8,7 +8,6 @@ import java.time.Duration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** T025 — opções da linha de comando. */
 class CliParserTest {
 
     private static Config parse(String... args) {

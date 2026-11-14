@@ -7,24 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.HdrHistogram.Histogram;
 
-/**
- * Resultado de uma execução (só a fase de medição; o aquecimento fica de fora).
- *
- * @param targetTps a meta pedida
- * @param duration a duração pedida
- * @param planned requisições planejadas na medição
- * @param sent as que de fato foram enviadas
- * @param completed as que receberam resposta HTTP (qualquer status)
- * @param dropped as descartadas pelo teto de requisições em voo
- * @param errors as que falharam na rede (recusadas, tempo esgotado)
- * @param tpsSent taxa alcançada no envio
- * @param latencyMicros latência em microssegundos, das respostas HTTP, medida a partir do horário planejado
- * @param statuses respostas por status (ex.: {@code 202 ACCEPTED}, {@code 503})
- * @param scenarios requisições enviadas por cenário
- * @param errorKinds erros de rede por tipo (classe e mensagem da exceção), para diagnosticar a causa
- * @param generatorCpuCores CPU média gasta pelo próprio gerador, em núcleos (negativo se não foi possível medir)
- * @param availableCpus núcleos disponíveis à JVM do gerador
- */
 public record Report(
         long targetTps,
         Duration duration,
@@ -43,7 +25,6 @@ public record Report(
 
     private static final Locale PT_BR = Locale.forLanguageTag("pt-BR");
 
-    /** Latência no percentil dado (0 a 100), em milissegundos; zero se não houve nenhuma resposta. */
     public double latencyMillis(double percentile) {
         return latencyMicros.getValueAtPercentile(percentile) / 1000.0;
     }
@@ -52,7 +33,6 @@ public record Report(
         return latencyMicros.getTotalCount();
     }
 
-    /** Quantas respostas demoraram mais que {@code millis}. */
     public long latencyCountAbove(double millis) {
         if (latencyMicros.getTotalCount() == 0) {
             return 0;

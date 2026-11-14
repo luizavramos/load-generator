@@ -17,10 +17,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/**
- * T021 — taxa, medição em modelo aberto (sem *coordinated omission*), duplicatas, aquecimento e sobrecarga, com alvos
- * simulados. Usa tempo real, com durações curtas.
- */
 class LoadRunnerTest {
 
     private static Config config(String... extra) {
@@ -58,7 +54,6 @@ class LoadRunnerTest {
         };
         var report = new LoadRunner(config("--tps", "200"), stalling).run();
 
-        // 400 planejadas, nenhuma omitida; as ~200 do primeiro segundo esperaram até o fim da trava
         assertThat(report.completed()).isEqualTo(400);
         assertThat(report.latencyCount()).isEqualTo(400);
         var slowerThanHalfSecond = report.latencyCountAbove(500);
@@ -71,8 +66,6 @@ class LoadRunnerTest {
     @Test
     @DisplayName("a latência conta a partir do horário planejado, não do envio: o atraso do próprio gerador entra na medida")
     void latenciaVemDoHorarioPlanejado() throws Exception {
-        // Alvo que bloqueia a thread de quem chama por 1 s só na PRIMEIRA chamada. Em modelo fechado, tudo atrás
-        // dela esperaria sem ser medido; em modelo aberto, as demais seguem em outras threads e a lenta é medida inteira.
         var first = new AtomicLong(0);
         Target oneSlow = planned -> {
             if (first.getAndIncrement() == 0) {
@@ -99,17 +92,20 @@ class LoadRunnerTest {
 
         var report = new LoadRunner(config("--tps", "400", "--duration", "1s", "--duplicate-ratio", "0.5", "--fraud-ratio", "0", "--seed", "42"), recording).run();
 
-        var firstBodyById = new HashMap<String, String>();
-        int duplicates = 0;
+        var originalBodyById = new HashMap<String, String>();
+        var duplicatesSeen = new ArrayList<PlannedTransaction>();
         for (var planned : new ArrayList<>(seen)) {
             if (planned.scenario() == Scenario.DUPLICATE) {
-                duplicates++;
-                assertThat(firstBodyById).containsKey(planned.transactionId());
-                assertThat(new String(planned.body())).isEqualTo(firstBodyById.get(planned.transactionId()));
+                duplicatesSeen.add(planned);
             } else {
-                assertThat(firstBodyById.put(planned.transactionId(), new String(planned.body()))).as("id novo repetido").isNull();
+                assertThat(originalBodyById.put(planned.transactionId(), new String(planned.body()))).as("id novo repetido").isNull();
             }
         }
+        for (var duplicate : duplicatesSeen) {
+            assertThat(originalBodyById).as("original da duplicata " + duplicate.transactionId()).containsKey(duplicate.transactionId());
+            assertThat(new String(duplicate.body())).isEqualTo(originalBodyById.get(duplicate.transactionId()));
+        }
+        int duplicates = duplicatesSeen.size();
         assertThat(duplicates).isBetween(150, 250);
         assertThat(report.scenarioCount(Scenario.DUPLICATE)).isEqualTo(duplicates);
     }

@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** T021 — controle de taxa. Sem relógio real: o tempo entra como parâmetro. */
 class TokenBucketTest {
 
     private static final long SECOND = 1_000_000_000L;
