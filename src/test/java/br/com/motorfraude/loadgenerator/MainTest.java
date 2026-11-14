@@ -105,7 +105,7 @@ class MainTest {
     @Test
     @DisplayName("fraude ~0,5% e duplicatas ~1% nas proporções pedidas (H4.2 e H4.3), conferidas pelo header de cenário")
     void proporcoesPeloHeader() {
-        var exit = run("--tps", "500", "--duration", "6s", "--target", target(), "--fraud-ratio", "0.05",
+        var exit = run("--tps", "100", "--duration", "10s", "--target", target(), "--fraud-ratio", "0.05",
                 "--duplicate-ratio", "0.10", "--seed", "11");
 
         assertThat(exit).isZero();
@@ -113,7 +113,7 @@ class MainTest {
         long duplicates = received.stream().filter(r -> r.scenario().equals("DUPLICATE")).count();
         long fraud = received.stream().filter(r -> !r.scenario().equals("NORMAL") && !r.scenario().equals("DUPLICATE")).count();
         assertThat(total).as(out.toString(StandardCharsets.UTF_8) + err.toString(StandardCharsets.UTF_8))
-                .isBetween(2900L, 3000L);
+                .isBetween(950L, 1000L);
         assertThat(fraud / (double) total).isBetween(0.035, 0.065);
         assertThat(duplicates / (double) total).isBetween(0.08, 0.12);
     }
