@@ -1,6 +1,6 @@
 # load-generator
 
-Gerador de carga sintética em modelo aberto, com cenários de fraude (spec 000, Fase 5). Gera `target/load-generator.jar`.
+Gerador de carga sintética em modelo aberto, com cenários de fraude. Gera `target/load-generator.jar`.
 
 ```bash
 ./mvnw package
