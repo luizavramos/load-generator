@@ -13,7 +13,7 @@
 
     <artifactId>load-generator</artifactId>
     <name>load-generator</name>
-    <description>Gerador de carga sintética com cenários de fraude, em modelo aberto (spec 000, H4).</description>
+    <description>Gerador de carga sintética com cenários de fraude, em modelo aberto.</description>
 
     <properties>
         <load-generator.main>br.com.motorfraude.loadgenerator.Main</load-generator.main>
